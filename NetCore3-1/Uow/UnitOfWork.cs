@@ -8,7 +8,7 @@ using NetCore3_1.Repository;
 
 namespace NetCore3_1.Uow
 {
-    public class UnitOfWork:IUnitOfWork,IDisposable
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly SampleDbContext _context;
         private IGenericRepository<Product> _productRepository;
@@ -20,7 +20,7 @@ namespace NetCore3_1.Uow
             _context = context;
         }
 
-        
+
 
         public IGenericRepository<Product> ProductRepository
         {
@@ -29,16 +29,20 @@ namespace NetCore3_1.Uow
 
         public IGenericRepository<OrderItems> OrderItemsRepository
         {
-            get{return _orderItemsRepository ??(_orderItemsRepository=new GenericRepository<OrderItems>(_context));}
+            get
+            {
+                return _orderItemsRepository ?? (_orderItemsRepository = new GenericRepository<OrderItems>(_context));
+            }
         }
 
         public IGenericRepository<Order> OrderRepository
         {
             get { return _orderRepository ?? (_orderRepository = new GenericRepository<Order>(_context)); }
         }
+
         public async Task Commit()
         {
-            using (var transaction=_context.Database.BeginTransaction())
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
@@ -47,8 +51,8 @@ namespace NetCore3_1.Uow
                 }
                 catch (Exception e)
                 {
-                   _context.Dispose();
-                   transaction.Rollback();
+                    _context.Dispose();
+                    transaction.Rollback();
                 }
             }
         }
@@ -67,9 +71,11 @@ namespace NetCore3_1.Uow
 
             this.disposed = true;
         }
+
         public void Dispose()
         {
             Dispose(true);
             System.GC.SuppressFinalize(this);
         }
+    }
 }
